@@ -136,3 +136,32 @@ class AvatarAnimationHierarchy:
         # global_transform * new_local_transform = new_transform
         new_local_transform = np.dot(np.linalg.inv(global_transform), new_transform)
         self.local_transform_dict[name] = new_local_transform
+
+    def get_joints_ultimate_parents(self, joint_names):
+        sorted_unique_joint_names = sorted(list(set(joint_names)))
+        ultimate_parents_in_joint_names = []
+        for name in sorted_unique_joint_names:
+            joint = self.get_joint_by_name(name)
+            while joint['parents'] != [] and joint['parents'] in sorted_unique_joint_names:
+                joint = self.get_joint_by_name(joint['parents'])
+            if joint['name'] not in ultimate_parents_in_joint_names:
+                ultimate_parents_in_joint_names.append(joint['name'])
+
+        # verification stage
+        # step 1: traversing from ultimate parents can reach all the joints
+        traverse_ultimate_parents = []
+        for name in ultimate_parents_in_joint_names:
+            traverse_ultimate_parents.extend(self.traverse_joint(name, sorted_unique_joint_names))
+        traverse_ultimate_parents = sorted(list(set(traverse_ultimate_parents)))
+        assert traverse_ultimate_parents == sorted_unique_joint_names, 'something wrong'
+
+        return ultimate_parents_in_joint_names
+
+    def traverse_joint(self, name, unique_names):
+        if name not in unique_names:
+            return []
+        joint = self.get_joint_by_name(name)
+        traverse_list = [name]
+        for name in joint['children']:
+            traverse_list.extend(self.traverse_joint(name, unique_names))
+        return traverse_list
