@@ -126,7 +126,7 @@ class AvatarAnimationHierarchy:
     def get_transform(self, name):
         return np.dot(self.get_global_transform(name), self.get_local_transform(name))
 
-    def move_joint(self, name, dx, dy, dz):
+    def translate_joint(self, name, dx, dy, dz):
         transform = self.get_transform(name)
         global_transform = self.get_global_transform(name)
         new_transform = transform.copy()
@@ -136,6 +136,13 @@ class AvatarAnimationHierarchy:
         # global_transform * new_local_transform = new_transform
         new_local_transform = np.dot(np.linalg.inv(global_transform), new_transform)
         self.local_transform_dict[name] = new_local_transform
+
+    def scale_joint(self, name, scale_x, scale_y, scale_z):
+        t, r, s = transform_to_translate_rotation_scale(self.local_transform_dict[name])
+        s[0][0] *= (scale_x+1)
+        s[1][1] *= (scale_y+1)
+        s[2][2] *= (scale_z+1)
+        self.local_transform_dict[name] = np.dot(np.dot(t, r), s)
 
     def get_joints_ultimate_parents(self, joint_names):
         sorted_unique_joint_names = sorted(list(set(joint_names)))
