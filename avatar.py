@@ -42,6 +42,9 @@ class AvatarController:
     def get_controllers(self):
         return sorted(self.controller_to_joints.keys())
 
+    def is_controller(self, controller_name):
+        return controller_name in self.controller_to_joints.keys()
+
 class AvatarAnimationHierarchy:
     def __init__(self, json_path):
         data = json.load(open(json_path))['hierarchy']
@@ -125,6 +128,12 @@ class AvatarAnimationHierarchy:
 
     def get_transform(self, name):
         return np.dot(self.get_global_transform(name), self.get_local_transform(name))
+
+    def get_location(self, name):
+        transform = self.get_transform(name)
+        return np.array([transform[0][3],
+                         transform[1][3],
+                         transform[2][3]])
 
     def translate_joint(self, name, dx, dy, dz):
         transform = self.get_transform(name)
