@@ -55,8 +55,11 @@ class AvatarAnimationHierarchy:
         for i in data:
             name = i['name']
             short_name = name.split('|')[-1]
-            assert short_name not in self.joint_short_to_full
-            self.joint_short_to_full[short_name] = name
+            if short_name in self.joint_short_to_full:
+                print('WARNING already seen {}'.format(short_name))
+                self.joint_short_to_full[short_name] = None
+            else:
+                self.joint_short_to_full[short_name] = name
             assert name not in self.joint_dict
             self.joint_dict[name] = i
 
