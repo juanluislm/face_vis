@@ -1,0 +1,3 @@
+[submodule "faceTraining"]
+	path = faceTraining
+	url = https://github.com/withme/faceTraining
