@@ -1,3 +1,3 @@
 [submodule "faceTraining"]
 	path = faceTraining
-	url = https://github.com/withme/faceTraining
+	url =  git@github.com:withme/faceTraining.git
